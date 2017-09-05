@@ -1,0 +1,11 @@
+This folder contains the code for the backend webservice
+
+Currently the webservice supports 2 RESTfull API methods:
+
+Enroll - to enroll a new user 
+Verify - to obtain the score of the current image against the enrolled user
+
+To perform the face recognition, VGG Face Descriptor using Caffe is used.
+
+The caffe installation is assumed to be separate, however the code for obtaining the VGG features is part of the project.
+Also the caffe model used can be found under vgg_caffe_model
