@@ -1,0 +1,5 @@
+<root>
+    <item name='android.widget.GridLayout'>
+        <annotation name='java.lang.Deprecated' />
+    </item>
+</root>

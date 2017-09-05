@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+  <LinearLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/topLayout"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:keepScreenOn="true">
+
+    <com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSourcePreview
+        android:id="@+id/preview"
+        android:layout_width="206dp"
+        android:layout_height="275dp"
+        android:layout_gravity="center">
+
+      <com.google.android.gms.samples.vision.face.facetracker.ui.camera.GraphicOverlay
+          android:id="@+id/faceOverlay"
+          android:layout_width="206dp"
+          android:layout_height="275dp"
+          android:layout_gravity="center"/>
+
+    </com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSourcePreview>
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/enrollButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="enroll" />
+
+        <Button
+            android:id="@+id/floatingActionButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:text="drawGraph" />
+        <LinearLayout
+            android:layout_width="206dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/common_plus_signin_btn_icon_light_normal" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>
+
+
