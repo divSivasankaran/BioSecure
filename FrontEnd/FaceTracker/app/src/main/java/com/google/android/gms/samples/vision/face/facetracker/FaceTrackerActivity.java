@@ -30,6 +30,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -55,6 +56,9 @@ import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.samples.vision.face.facetracker.ui.camera.CameraSourcePreview;
 import com.google.android.gms.samples.vision.face.facetracker.ui.camera.GraphicOverlay;
+import com.google.android.gms.vision.face.Landmark;
+
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,6 +66,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Activity for the face tracker app.  This app detects faces with the rear facing camera, and draws
@@ -72,10 +81,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     List<Entry> entries = new ArrayList<Entry>();
     int [] x = {1,2,3,4,5,6,7,8,9,10};
     int [] y = {0,0,0,0,0,0,0,0,0,0};
-    int score = 0;
+    static int score = 10;
     private static final String TAG = "FaceTracker";
 
     Face currFace;
+    BBox currBBOX;
     private CameraSource mCameraSource = null;
 
     private CameraSourcePreview mPreview;
@@ -85,6 +95,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
+    private VGGAPI mVGGAPI = new VGGAPI();
+    private LineChart chart;
     //==============================================================================================
     // Activity Methods
     //==============================================================================================
@@ -109,10 +121,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             requestCameraPermission();
         }
 
-        Button fab = (Button) findViewById(R.id.floatingActionButton);
+        //Button fab = (Button) findViewById(R.id.floatingActionButton);
         Button enrollButton = (Button) findViewById(R.id.enrollButton);
-
-        final LineChart chart = (LineChart) findViewById(R.id.chart);
+        chart = (LineChart) findViewById(R.id.chart);
         chart.setBackgroundColor(Color.WHITE);
         Description desc= new Description();
         desc.setText("Confindence of valid user");
@@ -127,90 +138,138 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         yAxisRight.setDrawGridLines(false);
         yAxisLeft.setDrawGridLines(false);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-               // GridLayout gridLayout = (GridLayout) findViewById(R.id.gridLayout);
+        startRepeatingTask();
 
-                // #TODO: call authentication and get score
-
-                generateData();
-                chart.setData(addData(x,y));
-                /*if(y[y.length - 1] >= 6){
-                    //relativeLayout.setBackgroundColor(Color.GREEN);
-                    Log.d("Color change", "GREEN");
-                    gridLayout.setBackgroundColor(Color.parseColor("#eafeea"));
-                }
-                else{
-                    //relativeLayout.setBackgroundColor(Color.RED);
-                    Log.d("Color change", "RED");
-                    gridLayout.setBackgroundColor(Color.parseColor("#ffe0e0"));
-                }*/
-                chart.invalidate();
-            }
-        });
 
         enrollButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view){
                 Log.d("DEBUG", "clicked enroll");
-                saveImage();
-                ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                File dir_image2 = new File(Environment.getExternalStorageDirectory()+
-                        File.separator+"BioSecure");
-                Bitmap bitmap = BitmapFactory.decodeFile(dir_image2+"/TempImage.jpg");
-                bitmap = bitmap.copy(bitmap.getConfig(), true);
-                Log.d("values:", String.valueOf((int) currFace.getPosition().x) + " , " +
-                                    String.valueOf((int) currFace.getPosition().y) + " , " +
-                                    String.valueOf((int) currFace.getWidth()) + " --- " +
-                                    String.valueOf((int) currFace.getHeight()) + " VS      " +
-                                    String.valueOf((int) bitmap.getWidth()) + " , " +
-                                    String.valueOf((int) bitmap.getHeight())
-                    );
-
-
-
-                // #TODO: call enroll with image = bitmap
-
-                imageView.setImageBitmap(bitmap);
+                enrollImage();
             }
         });
 
     }
 
+    void startRepeatingTask(){
 
-    void saveImage(){
-        mCameraSource.takePicture(null, mPicture);
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            verifyImage();
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 50000 ms
+
     }
 
-    private CameraSource.PictureCallback mPicture = new CameraSource.PictureCallback() {
+    void verifyImage(){
+        try {
+            mCameraSource.takePicture(null, mPictureVerify);
+        }
+        catch(Exception e){
+
+        }
+    }
+
+    private CameraSource.PictureCallback mPictureVerify = new CameraSource.PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data) {
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             File dir_image2 = new File(Environment.getExternalStorageDirectory()+
                     File.separator+"BioSecure");
             dir_image2.mkdirs();
-
-            File tmpFile = new File(dir_image2,"TempImage.jpg");
+            File tmpFile = new File(dir_image2,"Verify.jpg");
             try {
                 FileOutputStream fos = new FileOutputStream(tmpFile);
-                fos.write(data);
+                //bitmap = Bitmap.createBitmap(bitmap, (int)(currFace.getPosition().x), (int)(currFace.getPosition().y), (int)(currFace.getWidth()*3), (int)(currFace.getHeight()*3));
+                //bitmap = Bitmap.createBitmap(bitmap, currBBOX.left,currBBOX.right, currBBOX.width,currBBOX.height);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                //fos.write(data);
                 fos.close();
+                score = mVGGAPI.verifyUser(tmpFile);
+                Log.d("DEBUG ", "Current verify score "+ score);
+                updateScore();
+                chart.setData(addData(x,y));
+                chart.invalidate();
+
             } catch (FileNotFoundException e) {
                 Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
             }
-
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     };
 
 
-    private void generateData(){
+    void enrollImage(){
+        try {
+            mCameraSource.takePicture(null, mPictureEnroll);
+        }
+        catch(Exception e){
+
+        }
+    }
+
+    private CameraSource.PictureCallback mPictureEnroll = new CameraSource.PictureCallback() {
+
+        @Override
+        public void onPictureTaken(byte[] data) {
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            File dir_image2 = new File(Environment.getExternalStorageDirectory()+
+                    File.separator+"BioSecure");
+            dir_image2.mkdirs();
+
+            File tmpFile = new File(dir_image2,"Enroll.jpg");
+            try {
+                FileOutputStream fos = new FileOutputStream(tmpFile);
+                Log.d("DEBUG","bitmap width"+bitmap.getWidth());
+                Log.d("DEBUG","width "+currFace.getWidth());
+
+                //bitmap = Bitmap.createBitmap(bitmap, (int)(currFace.getPosition().x), (int)(currFace.getPosition().y), (int)(currFace.getWidth()*3), (int)(currFace.getHeight()*3));
+
+                //bitmap = Bitmap.createBitmap(bitmap, currBBOX.left,currBBOX.top, currBBOX.width,currBBOX.height);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos);
+                //fos.write(data);
+                fos.close();
+                mVGGAPI.enrollUser(tmpFile);
+            } catch (FileNotFoundException e) {
+                Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+            imageView.setImageBitmap(bitmap);
+        }
+    };
+
+
+    private void updateScore(){
         for(int i = 1; i < y.length; i ++){
             y[i-1] = y[i];
         }
-        score = (int) Math.round(10 * Math.random());
         y[y.length - 1] = score;
+        Log.d("DEBUG", "score updated "+score);
     }
 
     public LineData addData(int[] x, int[] y){
@@ -274,6 +333,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                 .build();
 
         detector.setProcessor(
@@ -452,6 +512,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             mOverlay.add(mFaceGraphic);
             currFace = face;
             mFaceGraphic.updateFace(face, score);
+            currBBOX = mFaceGraphic.getBBox();
         }
 
         /**

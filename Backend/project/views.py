@@ -67,10 +67,15 @@ def compare(feature1,feature2):
 
 @app.route(base + '/')
 def index():
-    return render_template('index.html')
+    return jsonify(render_template('index.html')),200
 
-@app.route(base + '/enroll', methods=['PUT'])
+@app.route(base + '/enroll', methods=['POST'])
 def enroll():
+    print("args ", request.args)
+    print("files ", request.files)
+    print("data ",request.data)
+    print("val ", request.values)
+    print("json ", request.form)
     img  = import_data(request)
     if img == None:
         abort(415)
@@ -82,9 +87,9 @@ def enroll():
         saveEnrolledFeature(feature)
     except KeyError as e:
         abort(503)
-    return jsonify({'status': 'Success'})
+    return jsonify({'status': 'Success'}),200
 
-@app.route(base + '/verify', methods=['PUT'])
+@app.route(base + '/verify', methods=['POST'])
 def verify():
     if not os.path.isfile("project/data/enrolled_feature.csv"):
         abort(412)
@@ -96,7 +101,7 @@ def verify():
     enrolled_feature = loadEnrolledFeature()
     score = compare(test_feature,enrolled_feature)
     print("SCORE ", score)
-    return jsonify({'status': 'Success', 'score': str(score)})
+    return jsonify({'status': 'Success', 'score': str(score)}),200
 
 ####### ERROR HANDLERS #######
 

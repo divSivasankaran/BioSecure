@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -31,7 +32,7 @@
         <activity
             android:name="com.google.android.gms.samples.vision.face.facetracker.FaceTrackerActivity"
             android:icon="@drawable/icon"
-            android:label="Face Tracker"
+            android:label="BioSecure"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="fullSensor">
             <intent-filter>

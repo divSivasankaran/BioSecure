@@ -18,6 +18,7 @@ package com.google.android.gms.samples.vision.face.facetracker;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.google.android.gms.samples.vision.face.facetracker.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.face.Face;
@@ -47,6 +48,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private Paint mFacePositionPaint;
     private Paint mIdPaint;
     private Paint mBoxPaint;
+    private BBox mBBox;
 
     private volatile Face mFace;
     private int mFaceId;
@@ -54,7 +56,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private int score;
     FaceGraphic(GraphicOverlay overlay, int colorIdx, int score) {
         super(overlay);
-
+        mBBox = new BBox();
         mCurrentColorIndex = colorIdx;
         score = score;
         final int selectedColor = COLOR_CHOICES[mCurrentColorIndex];
@@ -96,6 +98,11 @@ class FaceGraphic extends GraphicOverlay.Graphic {
             mBoxPaint.setColor(Color.GREEN);
         }
         postInvalidate();
+    }
+
+    BBox getBBox()
+    {
+        return mBBox;
     }
 
     /**
