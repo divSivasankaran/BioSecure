@@ -20,8 +20,8 @@ import android.content.Context;
 
 public class VGGClient {
     // TODO: Add your own IP address
-    //private static final String BASE_URL = "http://192.168.1.32:5000/biosecure/api/v1/";
-    private static final String BASE_URL = "http://192.168.1.25:5000/biosecure/api/v1/";
+    private static final String BASE_URL = "http://192.168.1.32:5000/biosecure/api/v1/";
+    //private static final String BASE_URL = "http://192.168.1.25:5000/biosecure/api/v1/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 

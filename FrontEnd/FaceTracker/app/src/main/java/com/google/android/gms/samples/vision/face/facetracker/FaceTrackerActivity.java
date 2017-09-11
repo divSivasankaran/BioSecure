@@ -95,7 +95,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
-    private VGGAPI mVGGAPI = new VGGAPI();
+    private VGGAPI mVGGAPI = new VGGAPI(this);
     private LineChart chart;
     //==============================================================================================
     // Activity Methods
@@ -199,11 +199,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 //fos.write(data);
                 fos.close();
-                score = mVGGAPI.verifyUser(tmpFile);
-                Log.d("DEBUG ", "Current verify score "+ score);
-                updateScore();
-                chart.setData(addData(x,y));
-                chart.invalidate();
+                mVGGAPI.verifyUser(tmpFile);
 
             } catch (FileNotFoundException e) {
                 Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
@@ -264,12 +260,14 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     };
 
 
-    private void updateScore(){
+    public void updateScore(){
         for(int i = 1; i < y.length; i ++){
             y[i-1] = y[i];
         }
         y[y.length - 1] = score;
-        Log.d("DEBUG", "score updated "+score);
+        Log.d("DEBUG", "score updated on activity"+score);
+        chart.setData(addData(x,y));
+        chart.invalidate();
     }
 
     public LineData addData(int[] x, int[] y){

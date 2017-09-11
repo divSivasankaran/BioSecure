@@ -15,14 +15,19 @@ import java.io.FileNotFoundException;
 import cz.msebera.android.httpclient.Header;
 
 public class VGGAPI {
-    public int score = 0;
+    public FaceTrackerActivity mActivity;
 
-    public void updateScore(double s){
-        score = 10 - (int)(s*10);
-        Log.d("DEBUG ", "Backend updated Score: "+score);
+    public VGGAPI(FaceTrackerActivity a)
+    {
+        mActivity = a;
     }
 
-    public int verifyUser(File img) throws JSONException, FileNotFoundException{
+    public void updateScore(double s){
+        mActivity.score = 10 - (int)(s*10);
+        mActivity.updateScore();
+    }
+
+    public boolean verifyUser(File img) throws JSONException, FileNotFoundException{
         // http://localhost:5000/biosecure/api/v1/verify
 
         RequestParams params = new RequestParams();
@@ -60,7 +65,7 @@ public class VGGAPI {
                 Log.d("DEBUG" , "Failed : "+statusCode+response.toString());
             }      });
 
-        return score;
+        return true;
     }
 
 
