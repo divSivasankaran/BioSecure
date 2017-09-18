@@ -195,7 +195,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 FileOutputStream fos = new FileOutputStream(tmpFile);
                 //bitmap = Bitmap.createBitmap(bitmap, (int)(currFace.getPosition().x), (int)(currFace.getPosition().y), (int)(currFace.getWidth()*3), (int)(currFace.getHeight()*3));
                 //bitmap = Bitmap.createBitmap(bitmap, currBBOX.left,currBBOX.right, currBBOX.width,currBBOX.height);
-                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 150, 180, false);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 //fos.write(data);
                 fos.close();
@@ -232,7 +232,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             File dir_image2 = new File(Environment.getExternalStorageDirectory()+
                     File.separator+"BioSecure");
             dir_image2.mkdirs();
-
+            imageView.setImageBitmap(bitmap);
             File tmpFile = new File(dir_image2,"Enroll.jpg");
             try {
                 FileOutputStream fos = new FileOutputStream(tmpFile);
@@ -242,7 +242,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 //bitmap = Bitmap.createBitmap(bitmap, (int)(currFace.getPosition().x), (int)(currFace.getPosition().y), (int)(currFace.getWidth()*3), (int)(currFace.getHeight()*3));
 
                 //bitmap = Bitmap.createBitmap(bitmap, currBBOX.left,currBBOX.top, currBBOX.width,currBBOX.height);
-                bitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                bitmap = Bitmap.createScaledBitmap(bitmap, 150, 180 , false);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fos);
                 //fos.write(data);
                 fos.close();
@@ -255,7 +255,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             catch (JSONException e) {
                 e.printStackTrace();
             }
-            imageView.setImageBitmap(bitmap);
         }
     };
 

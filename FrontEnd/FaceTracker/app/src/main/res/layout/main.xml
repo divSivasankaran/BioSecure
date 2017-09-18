@@ -29,19 +29,15 @@
         android:layout_height="200dp"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:weightSum="1">
         <Button
             android:id="@+id/enrollButton"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="enroll" />
+            android:text="enroll"
+            android:layout_weight="1.04" />
 
-        <Button
-            android:id="@+id/floatingActionButton"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:text="drawGraph" />
         <LinearLayout
             android:layout_width="206dp"
             android:layout_height="match_parent">
