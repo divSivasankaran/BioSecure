@@ -9,7 +9,7 @@ This was developed to demonstrate continuous authentication as a viable authenti
 The app uses [Google's Mobile Vision API](https://developers.google.com/android/reference/com/google/android/gms/vision/face/package-summary) for Face Detection which is bundled with the front-end.
 The code is based on this [sample code](https://github.com/googlesamples/android-vision/tree/master/visionSamples/FaceTracker) project with minor modifications made for UI.
 
-## [Back-End]
+## Back-End
 
 A pre-trained [VGGFace](http://www.robots.ox.ac.uk/~vgg/software/vgg_face/) model built with caffe is for Face Recognition and served over REST API as the backend server.
 
