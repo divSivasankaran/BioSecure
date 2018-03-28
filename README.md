@@ -1,7 +1,7 @@
 # BioSecure: Continous Authentication (Face)
 This was developed to demonstrate continuous authentication as a viable authentication mechanism for mobile devices as part of GovernmentWare (GovWare) at [Singapore International Cyber Security Week 2017](https://www.sicw.sg/)
 
-![alt text](https://github.com/div1090/BioSecure/blob/master/poster.PNG)
+![alt text](https://raw.githubusercontent.com/div1090/BioSecure/master/poster.PNG)
 
 
 ## Front-End
