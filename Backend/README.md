@@ -11,7 +11,7 @@ To perform the face recognition, [VGG Face Descriptor](http://www.robots.ox.ac.u
 ## Instructions to deploy:
 
 The caffe installation is assumed to be separate, however the code for obtaining the VGG features is part of the project.
-Also the caffe model used can be found [here](https://drive.google.com/open?id=0BzrIGPn419nlX20zUFZvWnl0aXc)
+Also the caffe model used can be found [here](https://drive.google.com/drive/folders/16xonkYUHWaVoQG_ZJkEkNjvuZvhSSko2?usp=sharing)
 
 1) copy the contents of the vgg model to caffe-root/models/vgg_face_caffe
 2) Update caffe_root @ projects/views.py to point to the correct path
